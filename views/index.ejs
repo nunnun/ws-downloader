@@ -1,0 +1,37 @@
+<style>
+output {
+  border: 2px solid black;
+  border-radius: 3px;
+  display: block;
+  padding: 10px;
+  margin: 5px;
+  width:  500px;
+}
+
+div.left,.right {
+  float:left;
+}
+
+div.clear {
+  clear:both;
+}
+</style>
+
+<h1><%= title %></h1>
+<p>Download <span id=num></span> icons</p>
+
+<div class=left>
+<h3>with HTTP</h3>
+<h4>result <span class="res_http"></span>[msec]</h4>
+<button class=http>start</button>
+<output class=http></output>
+</div>
+<div class=right>
+<h3>with WebSocket</h3>
+<h4>result <span class="res_websocket"></span>[msec]</h4>
+<button class=websocket>start</button>
+<output class=websocket></output>
+</div>
+<div class=clear></div>
+
+<script src="/javascripts/wsclient.js"></script>
