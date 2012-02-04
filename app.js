@@ -32,7 +32,7 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 app.get('/logo/:id', function(req, res){
-  fs.readFile('./public/images/html5-32.png', function(e, data) {
+  fs.readFile(__dirname + '/public/images/html5-32.png', function(e, data) {
     res.header("Content-Type", "image/png");
     res.header("Connection", "close");
     res.send(data);
@@ -63,7 +63,7 @@ wsServer.on('request', function(req) {
   var conn = req.accept('', req.origin);
 
   conn.on('message', function(mesg) {
-    fs.readFile('./public/images/html5-32.png', function(e, data) {
+    fs.readFile(__dirname + '/public/images/html5-32.png', function(e, data) {
       conn.sendBytes(data);
     });
   });
