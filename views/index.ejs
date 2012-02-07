@@ -1,4 +1,14 @@
 <style>
+aside {
+  display: block;
+  font-size: 0.85em;
+  font-style:italic;
+  background: gray;
+  padding: 3px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px #000;
+}
+
 output {
   border: 2px solid black;
   border-radius: 3px;
@@ -19,6 +29,14 @@ div.clear {
 
 <h1><%= title %></h1>
 <p>Download <span id=num></span> icons</p>
+
+<aside>
+<script>
+document.write(new Date() + "<br>");
+document.write(navigator.userAgent);
+</script>
+</aside>
+
 
 <div class=left>
 <h3>with HTTP</h3>
