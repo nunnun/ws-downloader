@@ -1,5 +1,6 @@
 var num = 150;
 window.URL = window.URL || window.webkitURL;
+window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 $("#num").text(num);
 
