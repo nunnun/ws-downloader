@@ -4,6 +4,8 @@ window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 $("#num").text(num);
 
+var http_sleep = 1000;
+
 var ws = new WebSocket("ws://"+location.host)
 ws.onopen = function(){
   $("button.http").fadeIn();
@@ -19,61 +21,130 @@ $("button.websocket").click(function(){
 // websocket
 // ----------------------------
 var withWebSocket = function(){
-  var count = 0
-    , out = $('output.websocket')
-    , st
-    , res
+	var send_result = $("#send_result")[0].checked;
+	var measure_times = $('#measure_times option:selected').text();
+	var measure_counter = 0;
+	var results = [];
 
-  out.empty();
-  $(".res_websocket").empty();
+	var fetch = function() {
+		var count = 0, out = $('output.websocket'), st, res
 
-  for(var i = 0; i < num; i += 1){
-    ws.send("get");
-  }
+		out.empty();
+		$(".res_websocket").empty();
 
-  ws.onmessage = function(e) {
-    var blob = e.data;
+		for ( var i = 0; i < num; i += 1) {
+			ws.send("get");
+		}
 
-    var url = window.URL.createObjectURL(blob);
-    out.append("<img src='"+url+"'>");
+		ws.onmessage = function(e) {
+			var blob = e.data;
 
-    st = (count === 0 ? new Date().getTime() : st);
-    count += 1;
+			var url = window.URL.createObjectURL(blob);
+			out.append("<img src='" + url + "'>");
 
-    if(count === num) {
-      $(".res_websocket").text(new Date().getTime() - st);
-    }
-  }
+			st = (count === 0 ? new Date().getTime() : st);
+			count += 1;
+
+			if (count === num) {
+				var loadtime = new Date().getTime() - st;
+				if (send_result) {
+					postResult('ws', loadtime, function() {
+						measure_counter++;
+						if (measure_counter < measure_times) {
+							results.push(loadtime);
+							fetch();
+						}else{
+							results.push(loadtime);
+							$(".res_websocket").text(results.join());
+						}
+					});
+				}else{
+					measure_counter++;
+					if (measure_counter < measure_times) {
+						results.push(loadtime);
+						fetch();
+					}else{
+						results.push(loadtime);
+						$(".res_websocket").text(results.join());
+					}
+				}
+				
+			}
+		}
+	}
+	fetch();
 };
 
 // http
 // -------------------------------
 var withHTTP = function(){
-  var out = $('output.http')
-    , st
-    , res
-    , count = 0;
+	var send_result = $("#send_result")[0].checked;
+	var measure_times = $('#measure_times option:selected').text();
+	var measure_counter = 0;
+	var results = [];
+	var fetch = function() {
 
-  var getImg = function(id){
-    out.append("<img id='httptest"+id+"'src='/logo/"+id+"?"+new Date().getTime()+"'>");
+		var out = $('output.http'), st, res, count = 0;
 
+		var getImg = function(id) {
+			out.append("<img id='httptest" + id + "'src='/logo/" + id + "?"
+					+ new Date().getTime() + "'>");
 
-    $("#httptest"+id).bind("load", function(){
-      count += 1;
-      if(count === num) {
-        $(".res_http").text(new Date().getTime() - st);
-      }
-    });
-  }
+			$("#httptest" + id).bind("load", function() {
+				count += 1;
+				if (count === num) {
+					var loadtime = new Date().getTime() - st;
+					if (send_result) {
+						postResult('http', loadtime, function() {
+							measure_counter++;
+							if (measure_counter < measure_times) {
+								results.push(loadtime);
+								setTimeout(fetch,http_sleep);
+							}else{
+								results.push(loadtime);
+								$(".res_http").text(results.join());
+							}
+						});
+					}else{
+						measure_counter++;
+						if (measure_counter < measure_times) {
+							results.push(loadtime);
+							setTimeout(fetch,http_sleep);
+						}else{
+							results.push(loadtime);
+							$(".res_http").text(results.join());
+						}
+					}
+					
+				}
+			});
+		};
 
-  var start = function(){
-    out.empty();
-    $(".res_http").empty();
+		var start = function() {
+			out.empty();
+			$(".res_http").empty();
 
-    st = new Date().getTime();
-    for(var i = 0; i < num; i += 1){
-      getImg(i);
-    };
-  }
-  start();
+			st = new Date().getTime();
+			for ( var i = 0; i < num; i += 1) {
+				getImg(i);
+			}
+
+		};
+		start();
+	};
+
+	fetch();
 };
+
+
+var postResult = function(method,time,callback){
+	$.ajax({
+		type: 'POST',
+		url: '/result',
+		data: {
+			'method':method,
+			'time':time
+		},
+		success: callback
+	});
+}

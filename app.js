@@ -6,6 +6,7 @@ var express = require('express')
   , routes = require('./routes')
   , WebSocketServer = require('websocket').server
   , fs = require('fs')
+  , dateFormat = require('dateformat');
 
 var app = module.exports = express.createServer();
 
@@ -40,6 +41,12 @@ app.get('/logo/:id', function(req, res){
   });
 });
 
+app.post('/result', function(req, res){
+	  var log = fs.createWriteStream('./logs/'+req.body.method +'.csv', {'flags': 'a'});
+	  log.write( '"' + dateFormat(new Date(), "isoDateTime") + '","' + req.connection.remoteAddress + '",'+ req.body.time +"\n");
+	  res.contentType('application/json');
+	  res.send({'status':200});
+	});
 
 // WebSocket
 

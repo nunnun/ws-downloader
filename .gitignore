@@ -1,2 +1,6 @@
 .svn
 public/slides_
+.project
+logs/http.csv
+logs/ws.csv
+.settings
