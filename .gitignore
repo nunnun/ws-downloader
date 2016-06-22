@@ -4,3 +4,4 @@ public/slides_
 logs/http.csv
 logs/ws.csv
 .settings
+node_modules
