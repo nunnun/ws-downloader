@@ -6,7 +6,12 @@ $("#num").text(num);
 
 var http_sleep = 1000;
 
-var ws = new WebSocket("ws://"+location.host)
+
+if(window.location.protocol == "https:"){
+  var ws = new WebSocket("wss://"+location.host)
+}else{
+  var ws = new WebSocket("ws://"+location.host)
+}
 ws.onopen = function(){
   $("button.http").fadeIn();
   $("button.websocket").fadeIn();
@@ -68,7 +73,7 @@ var withWebSocket = function(){
 						$(".res_websocket").text(results.join());
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -115,7 +120,7 @@ var withHTTP = function(){
 							$(".res_http").text(results.join());
 						}
 					}
-					
+
 				}
 			});
 		};
